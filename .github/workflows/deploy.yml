@@ -88,10 +88,10 @@ jobs:
       - name: Ensure PBW files in web dist
         run: |
           cd config-page/dist
-          FIRST_PBW=$(ls *.pbw | head -n 1)
-          if [ -n "$FIRST_PBW" ]; then
-            cp "$FIRST_PBW" halcyon.pbw
-            cp "$FIRST_PBW" Halcyon.pbw
+          if [ -f halcyon.pbw ] && [ ! -f Halcyon.pbw ]; then
+            cp halcyon.pbw Halcyon.pbw
+          elif [ -f Halcyon.pbw ] && [ ! -f halcyon.pbw ]; then
+            cp Halcyon.pbw halcyon.pbw
           fi
           ls -la
 
