@@ -19,7 +19,7 @@ void messaging_init(void (*processed_callback)(void),
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
 
-  app_message_open(768, 64);
+  app_message_open(2048, 256);
 }
 
 void inbox_received_callback(DictionaryIterator *iterator, void *context) {
@@ -405,7 +405,8 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context) {
 
   if (showBtDisconnectIcon_tuple != NULL) {
     globalSettings.showBtDisconnectIcon =
-        (bool)showBtDisconnectIcon_tuple->value->int8;
+        (showBtDisconnectIcon_tuple->value->int32 != 0 ||
+         showBtDisconnectIcon_tuple->value->int8 != 0);
   }
 
   if (useQuietTheme_tuple != NULL) {

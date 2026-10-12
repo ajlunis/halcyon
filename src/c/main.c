@@ -221,7 +221,7 @@ static void quickViewLayerReposition() {
 static bool s_bluetooth_connected = true;
 
 bool bluetooth_is_connected(void) {
-  return s_bluetooth_connected;
+  return bluetooth_connection_service_peek();
 }
 
 static void bluetooth_connection_callback(bool connected) {
@@ -294,6 +294,7 @@ void onSettingsChanged() {
   update_clock();
 }
 
+#if !defined(PBL_PLATFORM_APLITE)
 // Event fires frequently, while obstruction is appearing or disappearing
 static void onUnobstructedAreaChange(AnimationProgress progress,
                                      void *context) {
@@ -304,6 +305,7 @@ static void onUnobstructedAreaChange(AnimationProgress progress,
 static void onUnobstructedAreaDidChange(void *context) {
   quickViewLayerReposition();
 }
+#endif
 
 static void main_window_load(Window *window) {
   // get information about the Window
@@ -333,11 +335,13 @@ static void main_window_load(Window *window) {
   layer_set_update_proc(ringLayer, draw_ring_layer);
   layer_add_child(shiftingLayer, ringLayer);
 
+#if !defined(PBL_PLATFORM_APLITE)
   // subscribe to the unobstructed area events
   UnobstructedAreaHandlers handlers = {.change = onUnobstructedAreaChange,
                                        .did_change =
                                            onUnobstructedAreaDidChange};
   unobstructed_area_service_subscribe(handlers, NULL);
+#endif
 
   // just in case quick view is open on load
   quickViewLayerReposition();
@@ -432,9 +436,8 @@ static void init() {
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 
   // Subscribe to Bluetooth connection events
-  connection_service_subscribe((ConnectionHandlers){
-      .pebble_app_connection_handler = bluetooth_connection_callback});
-  s_bluetooth_connected = connection_service_peek_pebble_app_connection();
+  bluetooth_connection_service_subscribe(bluetooth_connection_callback);
+  s_bluetooth_connected = bluetooth_connection_service_peek();
 
 #if defined(PBL_HEALTH)
   health_service_events_subscribe(health_handler, NULL);
@@ -449,7 +452,7 @@ static void init() {
 
 static void deinit() {
   accel_tap_service_unsubscribe();
-  connection_service_unsubscribe();
+  bluetooth_connection_service_unsubscribe();
   if (s_update_request_timer) {
     app_timer_cancel(s_update_request_timer);
   }
