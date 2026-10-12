@@ -51,12 +51,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Halcyon-pbw
-          path: build/Halcyon.pbw
+          path: build/*.pbw
 
   deploy-config-page:
     name: Build & Deploy Config Page
     runs-on: ubuntu-latest
-    needs: build-watchapp
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,12 +77,6 @@ jobs:
       - name: Build Config Page
         working-directory: ./config-page
         run: npx vite build
-
-      - name: Download PBW Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: Halcyon-pbw
-          path: config-page/dist
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
