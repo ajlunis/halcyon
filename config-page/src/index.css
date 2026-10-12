@@ -1196,41 +1196,76 @@ input[type='checkbox'] {
   gap: 8px;
 }
 
-.halite-backlight-current-badge {
+.halite-backlight-container {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.halite-backlight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.halite-backlight-badge-trigger {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 20px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-strong);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
 }
 
-.halite-backlight-color-swatch {
+.halite-backlight-badge-trigger:hover {
+  border-color: var(--halite-orange);
+  box-shadow: 0 0 0 2px var(--border-focus);
+}
+
+.halite-backlight-badge-swatch {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.3);
   display: inline-block;
+  flex-shrink: 0;
 }
 
-.halite-backlight-hex-label {
+.halite-backlight-badge-hex {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-main);
 }
 
+.halite-backlight-hidden-color-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
 .halite-backlight-presets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
-  padding: 4px 0;
+  justify-items: center;
+  padding: 4px 0 0;
 }
 
 .halite-backlight-swatch-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 2px solid var(--border-strong);
   cursor: pointer;
@@ -1241,63 +1276,13 @@ input[type='checkbox'] {
 
 .halite-backlight-swatch-btn:hover {
   transform: scale(1.15);
+  border-color: var(--text-main);
 }
 
 .halite-backlight-swatch-btn.selected {
   border-color: var(--halite-orange);
   transform: scale(1.18);
-}
-
-.halite-backlight-custom-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 4px;
-}
-
-.halite-backlight-hex-input-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-main);
-  width: 100%;
-}
-
-.halite-backlight-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.halite-backlight-text-input {
-  width: 100px;
-  padding: 6px 10px;
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  background: var(--bg-surface-elevated);
-  color: var(--text-main);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.halite-backlight-text-input:focus {
-  outline: none;
-  border-color: var(--halite-orange);
-  box-shadow: 0 0 0 2px var(--border-focus);
-}
-
-.halite-backlight-native-picker {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: transparent;
+  box-shadow: 0 0 8px 2px var(--halite-orange);
 }
 
 .halite-backlight-preview-glow {
@@ -1306,3 +1291,34 @@ input[type='checkbox'] {
   inset: 0;
   transition: all 0.3s ease;
 }
+
+/* Download watchface button at bottom of settings page */
+.halite-download-footer {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.halite-download-pbw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.halite-download-pbw-btn:hover {
+  border-color: var(--halite-orange);
+  background: var(--bg-surface);
+  color: var(--halite-orange);
+  transform: translateY(-1px);
+}
+

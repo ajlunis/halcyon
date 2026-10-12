@@ -56,6 +56,7 @@ jobs:
   deploy-config-page:
     name: Build & Deploy Config Page
     runs-on: ubuntu-latest
+    needs: build-watchapp
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,6 +78,22 @@ jobs:
       - name: Build Config Page
         working-directory: ./config-page
         run: npx vite build
+
+      - name: Download PBW Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Halcyon-pbw
+          path: config-page/dist
+
+      - name: Ensure PBW files in web dist
+        run: |
+          cd config-page/dist
+          FIRST_PBW=$(ls *.pbw | head -n 1)
+          if [ -n "$FIRST_PBW" ]; then
+            cp "$FIRST_PBW" halcyon.pbw
+            cp "$FIRST_PBW" Halcyon.pbw
+          fi
+          ls -la
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3

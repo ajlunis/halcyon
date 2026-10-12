@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useConfig } from '../context/PebbleConfigContext';
 import { Settings } from '../context/types';
-import { FormItem, FormItemLabel } from './FormItem';
+import { FormItemLabel } from './FormItem';
 import { Switch } from 'react-aria-components';
 
 export interface BacklightColorPickerProps {
@@ -40,8 +40,6 @@ export const BacklightColorPicker: React.FC<BacklightColorPickerProps> = ({
     ? rawColor.toUpperCase()
     : `#${rawColor.toUpperCase()}`;
 
-  const [customHexInput, setCustomHexInput] = useState(normalizedHex);
-
   const handleToggleSystem = (checked: boolean) => {
     updateSetting(useSystemKey, checked ? 1 : 0);
   };
@@ -49,16 +47,6 @@ export const BacklightColorPicker: React.FC<BacklightColorPickerProps> = ({
   const handleSelectColor = (hex: string) => {
     const clean = hex.replace('#', '').toUpperCase();
     updateSetting(colorKey, clean);
-    setCustomHexInput(`#${clean}`);
-  };
-
-  const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.toUpperCase();
-    setCustomHexInput(val);
-    const clean = val.replace('#', '');
-    if (/^[0-9A-F]{6}$/i.test(clean)) {
-      updateSetting(colorKey, clean);
-    }
   };
 
   return (
@@ -78,22 +66,36 @@ export const BacklightColorPicker: React.FC<BacklightColorPickerProps> = ({
       </Switch>
 
       {!useSystem && (
-        <FormItem className="halite-backlight-custom-container">
+        <div className="halite-backlight-container">
           <div className="halite-backlight-header">
             <FormItemLabel label={label} description={description} />
-            <div className="halite-backlight-current-badge">
+            <label
+              className="halite-backlight-badge-trigger"
+              title="Click to choose a custom color"
+            >
               <span
-                className="halite-backlight-color-swatch"
+                className="halite-backlight-badge-swatch"
                 style={{
                   backgroundColor: normalizedHex,
                   boxShadow: `0 0 10px ${normalizedHex}66`,
                 }}
               />
-              <span className="halite-backlight-hex-label">{normalizedHex}</span>
-            </div>
+              <span className="halite-backlight-badge-hex">{normalizedHex}</span>
+              <input
+                type="color"
+                value={normalizedHex.length === 7 ? normalizedHex : '#FFFFFF'}
+                onChange={(e) => handleSelectColor(e.target.value)}
+                className="halite-backlight-hidden-color-input"
+                aria-label="Pick custom backlight color"
+              />
+            </label>
           </div>
 
-          <div className="halite-backlight-presets-grid" role="radiogroup" aria-label="Preset backlight colors">
+          <div
+            className="halite-backlight-presets-grid"
+            role="radiogroup"
+            aria-label="Preset backlight colors"
+          >
             {PRESET_BACKLIGHT_COLORS.map((preset) => {
               const isSelected = normalizedHex.toLowerCase() === preset.hex.toLowerCase();
               return (
@@ -114,32 +116,7 @@ export const BacklightColorPicker: React.FC<BacklightColorPickerProps> = ({
               );
             })}
           </div>
-
-          <div className="halite-backlight-custom-row">
-            <label className="halite-backlight-hex-input-label">
-              <span>Custom HEX:</span>
-              <div className="halite-backlight-input-wrapper">
-                <input
-                  type="text"
-                  maxLength={7}
-                  value={customHexInput}
-                  onChange={handleHexInputChange}
-                  placeholder="#FFFFFF"
-                  className="halite-backlight-text-input"
-                  aria-label="Custom HEX color code"
-                />
-                <input
-                  type="color"
-                  value={normalizedHex.length === 7 ? normalizedHex : '#FFFFFF'}
-                  onChange={(e) => handleSelectColor(e.target.value)}
-                  className="halite-backlight-native-picker"
-                  aria-label="Pick color from palette"
-                  title="Choose custom color"
-                />
-              </div>
-            </label>
-          </div>
-        </FormItem>
+        </div>
       )}
     </div>
   );
