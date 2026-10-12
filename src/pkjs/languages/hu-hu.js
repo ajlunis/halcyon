@@ -52,6 +52,8 @@ module.exports = {
     "SET": "NAPNYUGTA",
     "RAIN": "ESŐ",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "TEL AKKU"
   }
 };

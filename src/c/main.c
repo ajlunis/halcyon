@@ -47,33 +47,34 @@ typedef struct {
 // Buffer storage for each of the 4 widget slots. Populated by
 // update_widget_text() on the minute tick / settings change, then read by
 // draw_center_text() on every redraw — so redraws stay allocation-free.
-static char widgetTextUS[WIDGET_TEXT_LEN]; // upper secondary
-static char widgetTextUP[WIDGET_TEXT_LEN]; // upper primary
-static char widgetTextLP[WIDGET_TEXT_LEN]; // lower primary
-static char widgetTextLS[WIDGET_TEXT_LEN]; // lower secondary
+#define WIDGET_DISPLAY_LEN 20
+static char widgetTextUS[WIDGET_DISPLAY_LEN]; // upper secondary
+static char widgetTextUP[WIDGET_DISPLAY_LEN]; // upper primary
+static char widgetTextLP[WIDGET_DISPLAY_LEN]; // lower primary
+static char widgetTextLS[WIDGET_DISPLAY_LEN]; // lower secondary
 
 static void update_widget_text(void) {
   if (globalSettings.widgetUpperSecondary[0] != '\0') {
     widget_get_text(globalSettings.widgetUpperSecondary, widgetTextUS,
-                    WIDGET_TEXT_LEN);
+                    WIDGET_DISPLAY_LEN);
   } else {
     widgetTextUS[0] = '\0';
   }
   if (globalSettings.widgetUpperPrimary[0] != '\0') {
     widget_get_text(globalSettings.widgetUpperPrimary, widgetTextUP,
-                    WIDGET_TEXT_LEN);
+                    WIDGET_DISPLAY_LEN);
   } else {
     widgetTextUP[0] = '\0';
   }
   if (globalSettings.widgetLowerPrimary[0] != '\0') {
     widget_get_text(globalSettings.widgetLowerPrimary, widgetTextLP,
-                    WIDGET_TEXT_LEN);
+                    WIDGET_DISPLAY_LEN);
   } else {
     widgetTextLP[0] = '\0';
   }
   if (globalSettings.widgetLowerSecondary[0] != '\0') {
     widget_get_text(globalSettings.widgetLowerSecondary, widgetTextLS,
-                    WIDGET_TEXT_LEN);
+                    WIDGET_DISPLAY_LEN);
   } else {
     widgetTextLS[0] = '\0';
   }
@@ -82,13 +83,6 @@ static void update_widget_text(void) {
 static void draw_center_text(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   bool useLargeFont = globalSettings.useLargeFonts;
-
-  bool useNightColors = false;
-  if (globalSettings.useNightTheme) {
-    struct tm *timeInfo = getCurrentTime();
-    int currentMinutes = timeInfo->tm_hour * 60 + timeInfo->tm_min;
-    useNightColors = isNightTime(currentMinutes);
-  }
 
   // ---- Font selection ----
   GFont time_font = fonts_get_system_font(FONT_TIME);
@@ -110,13 +104,10 @@ static void draw_center_text(Layer *layer, GContext *ctx) {
                                       : FONT_WIDGET_SECONDARY_OFFSET;
 
   // ---- Color selection ----
-  GColor timeColor =
-      useNightColors ? globalSettings.nightTimeColor : globalSettings.timeColor;
-  GColor primaryColor = useNightColors ? globalSettings.nightSubtextPrimaryColor
-                                       : globalSettings.subtextPrimaryColor;
-  GColor secondaryColor = useNightColors
-                              ? globalSettings.nightSubtextSecondaryColor
-                              : globalSettings.subtextSecondaryColor;
+  ColorTheme currentTheme = getCurrentColorTheme();
+  GColor timeColor = currentTheme.timeColor;
+  GColor primaryColor = currentTheme.subtextPrimaryColor;
+  GColor secondaryColor = currentTheme.subtextSecondaryColor;
 
   // ---- Build ordered slot list (top to bottom) ----
   // We use a fixed-size array and fill only active (non-empty) slots.
@@ -227,6 +218,30 @@ static void quickViewLayerReposition() {
   layer_mark_dirty(infoLayer);
 }
 
+static bool s_bluetooth_connected = true;
+
+bool bluetooth_is_connected(void) {
+  return s_bluetooth_connected;
+}
+
+static void bluetooth_connection_callback(bool connected) {
+  s_bluetooth_connected = connected;
+  if (ringLayer) {
+    layer_mark_dirty(ringLayer);
+  }
+}
+
+static void apply_backlight_settings(void) {
+#if defined(PBL_RGB_BACKLIGHT)
+  ColorTheme theme = getCurrentColorTheme();
+  if (theme.useSystemBacklight) {
+    light_set_system_color();
+  } else {
+    light_set_color_rgb888(theme.backlightColor);
+  }
+#endif
+}
+
 static void update_clock() {
   Settings_updateDynamicSettings();
 
@@ -255,6 +270,9 @@ static void update_clock() {
   // ensure colors are updated based on settings
   window_set_background_color(mainWindow,
                               getCurrentColorTheme().ringStrokeColor);
+
+  // apply backlight color tint based on current theme
+  apply_backlight_settings();
 
   // if sunrise/sunset has not yet been calculated, do that
   if (currentSolarInfo.sunriseMinute == DEFAULT_SUNRISE_TIME &&
@@ -335,8 +353,25 @@ static void main_window_unload(Window *window) {
   layer_destroy(centerLayer);
 }
 
+static time_t s_last_battery_request_time = 0;
+
+static void maybe_request_phone_battery(void) {
+  if (widgets_contain_token("{phone_batt}")) {
+    time_t now = time(NULL);
+    if (now - s_last_battery_request_time >= 60) {
+      s_last_battery_request_time = now;
+      messaging_request_phone_battery();
+    }
+  }
+}
+
+static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
+  maybe_request_phone_battery();
+}
+
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_clock();
+  maybe_request_phone_battery();
 }
 
 #if defined(PBL_HEALTH)
@@ -396,15 +431,25 @@ static void init() {
   // Register with TickTimerService
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 
+  // Subscribe to Bluetooth connection events
+  connection_service_subscribe((ConnectionHandlers){
+      .pebble_app_connection_handler = bluetooth_connection_callback});
+  s_bluetooth_connected = connection_service_peek_pebble_app_connection();
+
 #if defined(PBL_HEALTH)
   health_service_events_subscribe(health_handler, NULL);
 #endif
+
+  // Subscribe to wrist shake events for phone battery updates
+  accel_tap_service_subscribe(accel_tap_handler);
 
   // Schedule initial update request with short delay to give PKJS time to start
   schedule_next_update_request(UPDATE_REQUEST_INITIAL_DELAY_MS);
 }
 
 static void deinit() {
+  accel_tap_service_unsubscribe();
+  connection_service_unsubscribe();
   if (s_update_request_timer) {
     app_timer_cancel(s_update_request_timer);
   }

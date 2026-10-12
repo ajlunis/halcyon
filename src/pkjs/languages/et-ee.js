@@ -52,6 +52,8 @@ module.exports = {
     "SET": "LOOJANG",
     "RAIN": "VIHM",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "TEL AKU"
   }
 };

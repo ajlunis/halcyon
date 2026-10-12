@@ -25,6 +25,8 @@ export const DAY_THEME_KEYS: (keyof Settings)[] = [
     'SETTING_RING_SUNSET_COLOR',
     'SETTING_SUN_STROKE_COLOR',
     'SETTING_SUN_FILL_COLOR',
+    'SETTING_BACKLIGHT_USE_SYSTEM',
+    'SETTING_BACKLIGHT_COLOR',
 ];
 
 /** Night-mode equivalents of DAY_THEME_KEYS, in the same order */
@@ -42,13 +44,34 @@ export const NIGHT_THEME_KEYS: (keyof Settings)[] = [
     'SETTING_NIGHT_RING_SUNSET_COLOR',
     'SETTING_NIGHT_SUN_STROKE_COLOR',
     'SETTING_NIGHT_SUN_FILL_COLOR',
+    'SETTING_NIGHT_BACKLIGHT_USE_SYSTEM',
+    'SETTING_NIGHT_BACKLIGHT_COLOR',
 ];
 
-/** Convert any SETTING_NIGHT_* keys to their SETTING_* equivalents */
+/** Quiet-time equivalents of DAY_THEME_KEYS, in the same order */
+export const QUIET_THEME_KEYS: (keyof Settings)[] = [
+    'SETTING_QUIET_TIME_COLOR',
+    'SETTING_QUIET_SUBTEXT_PRIMARY_COLOR',
+    'SETTING_QUIET_SUBTEXT_SECONDARY_COLOR',
+    'SETTING_QUIET_BG_COLOR',
+    'SETTING_QUIET_PIP_COLOR_PRIMARY',
+    'SETTING_QUIET_PIP_COLOR_SECONDARY',
+    'SETTING_QUIET_RING_STROKE_COLOR',
+    'SETTING_QUIET_RING_NIGHT_COLOR',
+    'SETTING_QUIET_RING_DAY_COLOR',
+    'SETTING_QUIET_RING_SUNRISE_COLOR',
+    'SETTING_QUIET_RING_SUNSET_COLOR',
+    'SETTING_QUIET_SUN_STROKE_COLOR',
+    'SETTING_QUIET_SUN_FILL_COLOR',
+    'SETTING_QUIET_BACKLIGHT_USE_SYSTEM',
+    'SETTING_QUIET_BACKLIGHT_COLOR',
+];
+
+/** Convert any SETTING_NIGHT_* or SETTING_QUIET_* keys to their SETTING_* equivalents */
 export function remapToDayKeys(settings: Record<string, string>): Record<string, string> {
     const result: Record<string, string> = {};
     for (const [key, value] of Object.entries(settings)) {
-        result[key.replace(/^SETTING_NIGHT_/, 'SETTING_')] = value;
+        result[key.replace(/^SETTING_(?:NIGHT_|QUIET_)/, 'SETTING_')] = value;
     }
     return result;
 }
@@ -57,8 +80,20 @@ export function remapToDayKeys(settings: Record<string, string>): Record<string,
 export function remapToNightKeys(settings: Record<string, string>): Record<string, string> {
     const result: Record<string, string> = {};
     for (const [key, value] of Object.entries(settings)) {
-        // Only remap keys that don't already have the NIGHT_ prefix
-        result[key.replace(/^SETTING_(?!NIGHT_)/, 'SETTING_NIGHT_')] = value;
+        // Strip existing prefix then add NIGHT_ prefix
+        const baseKey = key.replace(/^SETTING_(?:NIGHT_|QUIET_)/, 'SETTING_');
+        result[baseKey.replace(/^SETTING_/, 'SETTING_NIGHT_')] = value;
+    }
+    return result;
+}
+
+/** Convert SETTING_* keys to their SETTING_QUIET_* equivalents */
+export function remapToQuietKeys(settings: Record<string, string>): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(settings)) {
+        // Strip existing prefix then add QUIET_ prefix
+        const baseKey = key.replace(/^SETTING_(?:NIGHT_|QUIET_)/, 'SETTING_');
+        result[baseKey.replace(/^SETTING_/, 'SETTING_QUIET_')] = value;
     }
     return result;
 }
@@ -99,12 +134,15 @@ export function useSavedThemes() {
 
     /**
      * Capture the current settings as a new saved theme.
-     * Pass `isNight: true` when saving from the night panel so night-mode
-     * keys are captured and then normalized to day-key format for storage.
+     * Pass `isNight: true` or `'night'` when saving from the night panel,
+     * or `'quiet'` when saving from the Quiet Time panel.
+     * Keys are captured and then normalized to day-key format for storage.
      */
     const saveTheme = useCallback(
-        (settings: Settings, isNight: boolean): SavedTheme => {
-            const keys = isNight ? NIGHT_THEME_KEYS : DAY_THEME_KEYS;
+        (settings: Settings, mode: boolean | 'day' | 'night' | 'quiet' = 'day'): SavedTheme => {
+            const isNight = mode === true || mode === 'night';
+            const isQuiet = mode === 'quiet';
+            const keys = isQuiet ? QUIET_THEME_KEYS : isNight ? NIGHT_THEME_KEYS : DAY_THEME_KEYS;
             const captured: Record<string, string> = {};
             for (const key of keys) {
                 captured[key] = String(settings[key]);
@@ -113,7 +151,7 @@ export function useSavedThemes() {
                 id: generateId(),
                 name: getNextName(savedThemes),
                 // Always store in day-key format regardless of which panel saved it
-                settings: isNight ? remapToDayKeys(captured) : captured,
+                settings: remapToDayKeys(captured),
             };
             // Prepend so the list is newest-first
             setSavedThemes((prev) => [theme, ...prev]);
@@ -157,6 +195,12 @@ export function useSavedThemes() {
                 const colorSettings: Record<string, string> = {};
                 for (const key of DAY_THEME_KEYS) {
                     if (key in daySettings) colorSettings[key] = daySettings[key];
+                }
+                if (!('SETTING_BACKLIGHT_USE_SYSTEM' in colorSettings)) {
+                    colorSettings['SETTING_BACKLIGHT_USE_SYSTEM'] = '1';
+                }
+                if (!('SETTING_BACKLIGHT_COLOR' in colorSettings)) {
+                    colorSettings['SETTING_BACKLIGHT_COLOR'] = 'FFFFFF';
                 }
 
                 const theme: SavedTheme = {

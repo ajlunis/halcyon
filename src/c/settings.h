@@ -86,6 +86,30 @@ typedef enum { TEMP_UNIT_CELSIUS = 0, TEMP_UNIT_FAHRENHEIT = 1 } TempUnitType;
 //   VIBE_EVERY_HALF_HOUR = 2
 // } VibeIntervalType;
 
+#define DEFAULT_BACKLIGHT_USE_SYSTEM true
+#define DEFAULT_BACKLIGHT_COLOR 0xFFFFFF
+#define DEFAULT_NIGHT_BACKLIGHT_USE_SYSTEM true
+#define DEFAULT_NIGHT_BACKLIGHT_COLOR 0xFFFFFF
+#define DEFAULT_SHOW_BT_DISCONNECT_ICON false
+
+#define DEFAULT_USE_QUIET_THEME false
+#define DEFAULT_QUIET_BACKLIGHT_USE_SYSTEM true
+#define DEFAULT_QUIET_BACKLIGHT_COLOR 0xFFFFFF
+
+#define DEFAULT_QUIET_TIME_COLOR DEFAULT_NIGHT_TIME_COLOR
+#define DEFAULT_QUIET_SUBTEXT_PRIMARY_COLOR DEFAULT_NIGHT_SUBTEXT_PRIMARY_COLOR
+#define DEFAULT_QUIET_SUBTEXT_SECONDARY_COLOR DEFAULT_NIGHT_SUBTEXT_SECONDARY_COLOR
+#define DEFAULT_QUIET_BG_COLOR DEFAULT_NIGHT_BG_COLOR
+#define DEFAULT_QUIET_PIP_COLOR_PRIMARY DEFAULT_NIGHT_PIP_COLOR_PRIMARY
+#define DEFAULT_QUIET_PIP_COLOR_SECONDARY DEFAULT_NIGHT_PIP_COLOR_SECONDARY
+#define DEFAULT_QUIET_RING_STROKE_COLOR DEFAULT_NIGHT_RING_STROKE_COLOR
+#define DEFAULT_QUIET_RING_NIGHT_COLOR DEFAULT_NIGHT_RING_NIGHT_COLOR
+#define DEFAULT_QUIET_RING_DAY_COLOR DEFAULT_NIGHT_RING_DAY_COLOR
+#define DEFAULT_QUIET_RING_SUNRISE_COLOR DEFAULT_NIGHT_RING_SUNRISE_COLOR
+#define DEFAULT_QUIET_RING_SUNSET_COLOR DEFAULT_NIGHT_RING_SUNSET_COLOR
+#define DEFAULT_QUIET_SUN_STROKE_COLOR DEFAULT_NIGHT_SUN_STROKE_COLOR
+#define DEFAULT_QUIET_SUN_FILL_COLOR DEFAULT_NIGHT_SUN_FILL_COLOR
+
 // Color theme struct containing just the color fields
 typedef struct {
   GColor timeColor;
@@ -101,6 +125,10 @@ typedef struct {
   GColor ringSunsetColor;
   GColor sunStrokeColor;
   GColor sunFillColor;
+#if defined(PBL_RGB_BACKLIGHT)
+  bool useSystemBacklight;
+  uint32_t backlightColor;
+#endif
 } ColorTheme;
 
 typedef struct {
@@ -155,6 +183,28 @@ typedef struct {
   int16_t altCity2UtcOffset;
   int16_t localUtcOffset;
   bool usePrimaryFontForAllWidgets;
+  bool useSystemBacklight;
+  uint32_t backlightColor;
+  bool nightUseSystemBacklight;
+  uint32_t nightBacklightColor;
+  bool showBtDisconnectIcon;
+  bool useQuietTheme;
+  GColor quietTimeColor;
+  GColor quietSubtextPrimaryColor;
+  GColor quietSubtextSecondaryColor;
+  GColor quietBgColor;
+  GColor quietPipColorPrimary;
+  GColor quietPipColorSecondary;
+  GColor quietRingStrokeColor;
+  GColor quietRingNightColor;
+  GColor quietRingDayColor;
+  GColor quietRingSunriseColor;
+  GColor quietRingSunsetColor;
+  GColor quietSunStrokeColor;
+  GColor quietSunFillColor;
+  bool quietUseSystemBacklight;
+  uint32_t quietBacklightColor;
+  int8_t lastPhoneBattery;
 } Settings;
 
 typedef struct {
@@ -214,6 +264,28 @@ typedef struct {
   int16_t altCity2UtcOffset;
   int16_t localUtcOffset;
   bool usePrimaryFontForAllWidgets;
+  bool useSystemBacklight;
+  uint32_t backlightColor;
+  bool nightUseSystemBacklight;
+  uint32_t nightBacklightColor;
+  bool showBtDisconnectIcon;
+  bool useQuietTheme;
+  GColor quietTimeColor;
+  GColor quietSubtextPrimaryColor;
+  GColor quietSubtextSecondaryColor;
+  GColor quietBgColor;
+  GColor quietPipColorPrimary;
+  GColor quietPipColorSecondary;
+  GColor quietRingStrokeColor;
+  GColor quietRingNightColor;
+  GColor quietRingDayColor;
+  GColor quietRingSunriseColor;
+  GColor quietRingSunsetColor;
+  GColor quietSunStrokeColor;
+  GColor quietSunFillColor;
+  bool quietUseSystemBacklight;
+  uint32_t quietBacklightColor;
+  int8_t lastPhoneBattery;
 } StoredSettingsExtra;
 
 typedef char StoredSettings_must_fit_in_persist_data

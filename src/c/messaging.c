@@ -1,6 +1,8 @@
 #include "messaging.h"
 #include "settings.h"
 #include "solarUtils.h"
+#include "widgets.h"
+#include "drawUtils.h"
 #include <pebble.h>
 
 void (*message_processed_callback)(void);
@@ -117,6 +119,50 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context) {
       dict_find(iterator, MESSAGE_KEY_ALT_CITY2_UTC_OFFSET);
   Tuple *localUtcOffset_tuple =
       dict_find(iterator, MESSAGE_KEY_LOCAL_UTC_OFFSET);
+
+  Tuple *backlightUseSystem_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_BACKLIGHT_USE_SYSTEM);
+  Tuple *backlightColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_BACKLIGHT_COLOR);
+  Tuple *nightBacklightUseSystem_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_NIGHT_BACKLIGHT_USE_SYSTEM);
+  Tuple *nightBacklightColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_NIGHT_BACKLIGHT_COLOR);
+  Tuple *showBtDisconnectIcon_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_SHOW_BT_DISCONNECT_ICON);
+
+  Tuple *useQuietTheme_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_USE_QUIET_THEME);
+  Tuple *quietTimeColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_TIME_COLOR);
+  Tuple *quietSubTextPrimaryColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_SUBTEXT_PRIMARY_COLOR);
+  Tuple *quietSubTextSecondaryColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_SUBTEXT_SECONDARY_COLOR);
+  Tuple *quietBgColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_BG_COLOR);
+  Tuple *quietPipColorPrimary_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_PIP_COLOR_PRIMARY);
+  Tuple *quietPipColorSecondary_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_PIP_COLOR_SECONDARY);
+  Tuple *quietRingStrokeColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_RING_STROKE_COLOR);
+  Tuple *quietRingNightColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_RING_NIGHT_COLOR);
+  Tuple *quietRingDayColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_RING_DAY_COLOR);
+  Tuple *quietRingSunriseColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_RING_SUNRISE_COLOR);
+  Tuple *quietRingSunsetColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_RING_SUNSET_COLOR);
+  Tuple *quietSunStrokeColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_SUN_STROKE_COLOR);
+  Tuple *quietSunFillColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_SUN_FILL_COLOR);
+  Tuple *quietBacklightUseSystem_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_BACKLIGHT_USE_SYSTEM);
+  Tuple *quietBacklightColor_tuple =
+      dict_find(iterator, MESSAGE_KEY_SETTING_QUIET_BACKLIGHT_COLOR);
 
   if (timeColor_tuple != NULL) {
     globalSettings.timeColor = GColorFromHEX(timeColor_tuple->value->int32);
@@ -337,6 +383,118 @@ void inbox_received_callback(DictionaryIterator *iterator, void *context) {
         (int16_t)localUtcOffset_tuple->value->int32;
   }
 
+  if (backlightUseSystem_tuple != NULL) {
+    globalSettings.useSystemBacklight =
+        (bool)backlightUseSystem_tuple->value->int8;
+  }
+
+  if (backlightColor_tuple != NULL) {
+    globalSettings.backlightColor =
+        (uint32_t)backlightColor_tuple->value->int32;
+  }
+
+  if (nightBacklightUseSystem_tuple != NULL) {
+    globalSettings.nightUseSystemBacklight =
+        (bool)nightBacklightUseSystem_tuple->value->int8;
+  }
+
+  if (nightBacklightColor_tuple != NULL) {
+    globalSettings.nightBacklightColor =
+        (uint32_t)nightBacklightColor_tuple->value->int32;
+  }
+
+  if (showBtDisconnectIcon_tuple != NULL) {
+    globalSettings.showBtDisconnectIcon =
+        (bool)showBtDisconnectIcon_tuple->value->int8;
+  }
+
+  if (useQuietTheme_tuple != NULL) {
+    globalSettings.useQuietTheme = (bool)useQuietTheme_tuple->value->int8;
+  }
+
+  if (quietTimeColor_tuple != NULL) {
+    globalSettings.quietTimeColor =
+        GColorFromHEX(quietTimeColor_tuple->value->int32);
+  }
+
+  if (quietSubTextPrimaryColor_tuple != NULL) {
+    globalSettings.quietSubtextPrimaryColor =
+        GColorFromHEX(quietSubTextPrimaryColor_tuple->value->int32);
+  }
+
+  if (quietSubTextSecondaryColor_tuple != NULL) {
+    globalSettings.quietSubtextSecondaryColor =
+        GColorFromHEX(quietSubTextSecondaryColor_tuple->value->int32);
+  }
+
+  if (quietBgColor_tuple != NULL) {
+    globalSettings.quietBgColor =
+        GColorFromHEX(quietBgColor_tuple->value->int32);
+  }
+
+  if (quietPipColorPrimary_tuple != NULL) {
+    globalSettings.quietPipColorPrimary =
+        GColorFromHEX(quietPipColorPrimary_tuple->value->int32);
+  }
+
+  if (quietPipColorSecondary_tuple != NULL) {
+    globalSettings.quietPipColorSecondary =
+        GColorFromHEX(quietPipColorSecondary_tuple->value->int32);
+  }
+
+  if (quietRingStrokeColor_tuple != NULL) {
+    globalSettings.quietRingStrokeColor =
+        GColorFromHEX(quietRingStrokeColor_tuple->value->int32);
+  }
+
+  if (quietRingNightColor_tuple != NULL) {
+    globalSettings.quietRingNightColor =
+        GColorFromHEX(quietRingNightColor_tuple->value->int32);
+  }
+
+  if (quietRingDayColor_tuple != NULL) {
+    globalSettings.quietRingDayColor =
+        GColorFromHEX(quietRingDayColor_tuple->value->int32);
+  }
+
+  if (quietRingSunriseColor_tuple != NULL) {
+    globalSettings.quietRingSunriseColor =
+        GColorFromHEX(quietRingSunriseColor_tuple->value->int32);
+  }
+
+  if (quietRingSunsetColor_tuple != NULL) {
+    globalSettings.quietRingSunsetColor =
+        GColorFromHEX(quietRingSunsetColor_tuple->value->int32);
+  }
+
+  if (quietSunStrokeColor_tuple != NULL) {
+    globalSettings.quietSunStrokeColor =
+        GColorFromHEX(quietSunStrokeColor_tuple->value->int32);
+  }
+
+  if (quietSunFillColor_tuple != NULL) {
+    globalSettings.quietSunFillColor =
+        GColorFromHEX(quietSunFillColor_tuple->value->int32);
+  }
+
+  if (quietBacklightUseSystem_tuple != NULL) {
+    globalSettings.quietUseSystemBacklight =
+        (bool)quietBacklightUseSystem_tuple->value->int8;
+  }
+
+  if (quietBacklightColor_tuple != NULL) {
+    globalSettings.quietBacklightColor =
+        (uint32_t)quietBacklightColor_tuple->value->int32;
+  }
+
+  Tuple *phoneBatteryLevel_tuple =
+      dict_find(iterator, MESSAGE_KEY_PHONE_BATTERY_LEVEL);
+  if (phoneBatteryLevel_tuple != NULL) {
+    int level = (int)phoneBatteryLevel_tuple->value->int32;
+    widget_set_phone_battery_level(level);
+    globalSettings.lastPhoneBattery = (int8_t)level;
+  }
+
   Settings_saveToStorage();
 
   message_processed_callback();
@@ -376,5 +534,26 @@ void messaging_request_update() {
   if (result != APP_MSG_OK) {
     APP_LOG(APP_LOG_LEVEL_ERROR, "Failed to send outbox: %d", (int)result);
     if (request_failed_callback) request_failed_callback();
+  }
+}
+
+void messaging_request_phone_battery() {
+  if (!bluetooth_is_connected()) {
+    return;
+  }
+
+  DictionaryIterator *iter;
+  AppMessageResult result = app_message_outbox_begin(&iter);
+
+  if (result != APP_MSG_OK) {
+    APP_LOG(APP_LOG_LEVEL_ERROR, "Failed to begin outbox for phone battery: %d", (int)result);
+    return;
+  }
+
+  dict_write_int8(iter, MESSAGE_KEY_REQUEST_PHONE_BATTERY, 1);
+
+  result = app_message_outbox_send();
+  if (result != APP_MSG_OK) {
+    APP_LOG(APP_LOG_LEVEL_ERROR, "Failed to send phone battery request: %d", (int)result);
   }
 }

@@ -4,6 +4,23 @@
 #include "utils.h"
 #include <pebble.h>
 
+static int s_phone_battery_level = -1;
+
+void widget_set_phone_battery_level(int level) {
+  s_phone_battery_level = level;
+}
+
+int widget_get_phone_battery_level(void) {
+  return s_phone_battery_level;
+}
+
+bool widgets_contain_token(const char *token) {
+  return (strstr(globalSettings.widgetUpperSecondary, token) != NULL ||
+          strstr(globalSettings.widgetUpperPrimary, token) != NULL ||
+          strstr(globalSettings.widgetLowerPrimary, token) != NULL ||
+          strstr(globalSettings.widgetLowerSecondary, token) != NULL);
+}
+
 static void format_alt_time(char *buf, size_t buf_len, struct tm *alt_time) {
   if (clock_is_24h_style()) {
     strftime(buf, buf_len, "%H:%M", alt_time);
@@ -248,6 +265,14 @@ void widget_get_text(const char *format_string, char *buf, int buf_len) {
 #else
           temp[0] = '\0';
 #endif
+          matched = true;
+        } else if (strncmp(token, "phone_batt", token_len) == 0 &&
+                   token_len == 10) {
+          if (s_phone_battery_level >= 0) {
+            snprintf(temp, sizeof(temp), "%d", s_phone_battery_level);
+          } else {
+            snprintf(temp, sizeof(temp), "--");
+          }
           matched = true;
         } else if (strncmp(token, "batt", token_len) == 0 && token_len == 4) {
           BatteryChargeState state = battery_state_service_peek();

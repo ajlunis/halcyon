@@ -52,6 +52,8 @@ module.exports = {
     "SET": "ILUNABAR",
     "RAIN": "EURIA",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "BAT TEL"
   }
 };

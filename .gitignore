@@ -46,3 +46,17 @@ Temporary Items
 
 #custom things
 src/pkjs/configDataUri.js
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables and virtualenvs
+.env
+.env.local
+.env.*.local
+.venv/
+venv/

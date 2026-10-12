@@ -52,6 +52,8 @@ module.exports = {
     "SET": "ZALAZAK",
     "RAIN": "KIŠA",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "TEL BAT"
   }
 };

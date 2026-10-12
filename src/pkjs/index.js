@@ -1,6 +1,6 @@
 var USE_LOCAL_CONFIG = false;
-var configDataUri = 'https://halcyon.freakified.net/';
-var configLocalUri = 'http://10.25.219.23:3000/index.html';
+var configDataUri = 'https://ajlunis.github.io/halcyon/';
+var configLocalUri = 'http://localhost:5173/index.html';
 
 var SunCalc = require('./suncalc');
 var Weather = require('./weather');
@@ -34,6 +34,54 @@ function saveIs24h(is24h) {
 // 24-hour preference from the watch. Restored before the first startup render,
 // then refreshed from WATCH_IS_24H on each watch-initiated heartbeat.
 var cachedIs24h = restoreIs24h();
+
+// ---- Phone Battery API (Android WebView Battery API) ----
+var cachedPhoneBattery = -1;
+
+function fetchPhoneBattery(callback) {
+  if (typeof navigator !== 'undefined' && typeof navigator.getBattery === 'function') {
+    navigator.getBattery().then(function (battery) {
+      var level = Math.round(battery.level * 100);
+      cachedPhoneBattery = level;
+      console.log('Phone battery level: ' + level + '%');
+      if (callback) callback(level);
+    }).catch(function (err) {
+      console.log('Error querying battery API: ' + err);
+      if (callback) callback(cachedPhoneBattery);
+    });
+  } else {
+    if (callback) callback(cachedPhoneBattery);
+  }
+}
+
+function initBatteryMonitoring() {
+  if (typeof navigator !== 'undefined' && typeof navigator.getBattery === 'function') {
+    navigator.getBattery().then(function (battery) {
+      cachedPhoneBattery = Math.round(battery.level * 100);
+      battery.addEventListener('levelchange', function () {
+        var level = Math.round(battery.level * 100);
+        if (level !== cachedPhoneBattery) {
+          cachedPhoneBattery = level;
+          console.log('Phone battery level changed: ' + level + '%');
+          sendPhoneBatteryToWatch(level);
+        }
+      });
+    }).catch(function (err) {
+      console.log('Error initializing battery monitoring: ' + err);
+    });
+  }
+}
+
+function sendPhoneBatteryToWatch(level) {
+  var bLevel = (level !== undefined ? level : cachedPhoneBattery);
+  var msg = {
+    'PHONE_BATTERY_LEVEL': bLevel
+  };
+  Pebble.sendAppMessage(msg,
+    function () { console.log('Phone battery sent to watch: ' + bLevel); },
+    function (err) { console.log('Error sending phone battery: ' + JSON.stringify(err)); }
+  );
+}
 
 // Default widget format strings — used when no settings have been configured yet
 // so that JS can perform token substitution even on first run. The lower-primary
@@ -263,6 +311,10 @@ function sendDataToWatch() {
   // Send temp unit setting
   msg['SETTING_TEMP_UNIT'] = isImperial ? 1 : 0;
 
+  if (cachedPhoneBattery >= 0) {
+    msg['PHONE_BATTERY_LEVEL'] = cachedPhoneBattery;
+  }
+
   console.log('Sending to watch: ' + JSON.stringify(msg));
 
   Pebble.sendAppMessage(msg,
@@ -381,6 +433,14 @@ Pebble.addEventListener('ready', function (e) {
   // (uses defaults if no settings configured yet)
   sendDataToWatch();
 
+  // Initialize phone battery monitoring and send initial reading
+  initBatteryMonitoring();
+  fetchPhoneBattery(function (level) {
+    if (level >= 0) {
+      sendPhoneBatteryToWatch(level);
+    }
+  });
+
   // Then kick off a fresh location + weather fetch
   getLocation();
 });
@@ -390,6 +450,12 @@ Pebble.addEventListener('ready', function (e) {
 // It also includes its 24h time format preference.
 Pebble.addEventListener('appmessage', function (e) {
   console.log('Received message from watch: ' + JSON.stringify(e.payload));
+
+  if (e.payload['REQUEST_PHONE_BATTERY']) {
+    fetchPhoneBattery(function (level) {
+      sendPhoneBatteryToWatch(level);
+    });
+  }
 
   if (e.payload['REQUEST_UPDATE']) {
     // Extract 24h preference from the watch
@@ -479,7 +545,14 @@ Pebble.addEventListener('webviewclosed', function (e) {
     'SETTING_NIGHT_PIP_COLOR_PRIMARY', 'SETTING_NIGHT_PIP_COLOR_SECONDARY',
     'SETTING_NIGHT_RING_STROKE_COLOR', 'SETTING_NIGHT_RING_NIGHT_COLOR', 'SETTING_NIGHT_RING_DAY_COLOR',
     'SETTING_NIGHT_RING_SUNRISE_COLOR', 'SETTING_NIGHT_RING_SUNSET_COLOR',
-    'SETTING_NIGHT_SUN_STROKE_COLOR', 'SETTING_NIGHT_SUN_FILL_COLOR'
+    'SETTING_BACKLIGHT_COLOR', 'SETTING_NIGHT_BACKLIGHT_COLOR',
+    'SETTING_QUIET_TIME_COLOR', 'SETTING_QUIET_BG_COLOR',
+    'SETTING_QUIET_SUBTEXT_PRIMARY_COLOR', 'SETTING_QUIET_SUBTEXT_SECONDARY_COLOR',
+    'SETTING_QUIET_PIP_COLOR_PRIMARY', 'SETTING_QUIET_PIP_COLOR_SECONDARY',
+    'SETTING_QUIET_RING_STROKE_COLOR', 'SETTING_QUIET_RING_NIGHT_COLOR', 'SETTING_QUIET_RING_DAY_COLOR',
+    'SETTING_QUIET_RING_SUNRISE_COLOR', 'SETTING_QUIET_RING_SUNSET_COLOR',
+    'SETTING_QUIET_SUN_STROKE_COLOR', 'SETTING_QUIET_SUN_FILL_COLOR',
+    'SETTING_QUIET_BACKLIGHT_COLOR'
   ];
 
   // Widget string keys — these get Pass 1 applied instead of raw send

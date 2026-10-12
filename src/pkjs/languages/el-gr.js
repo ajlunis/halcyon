@@ -52,6 +52,8 @@ module.exports = {
     "SET": "ΔΥΣΗ",
     "RAIN": "ΒΡΟΧΗ",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "ΤΗΛ",
+    "PHONE_BATTERY": "ΜΠΑΤ ΤΗΛ"
   }
 };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from 'react-aria-components';
 import { WatchPreview, WatchPreviewProps } from './WatchPreview';
 import { ImportThemeModal } from './ImportThemeModal';
-import { SavedTheme, remapToNightKeys } from '../hooks/useSavedThemes';
+import { SavedTheme, remapToNightKeys, remapToQuietKeys } from '../hooks/useSavedThemes';
 import { useCapabilities, useConfig } from '../context/PebbleConfigContext';
 import { Settings } from '../context/types';
 import { copyToClipboard } from '../utils/clipboard';
@@ -59,6 +59,7 @@ export const CustomThemePanel: React.FC<CustomThemePanelProps> = ({
   const isSaved = !!savedTheme;
   const isRound = capabilities.ROUND && !capabilities.RECT;
   const isNight = watchPreviewProps?.isNight ?? false;
+  const isQuiet = watchPreviewProps?.isQuiet ?? false;
 
   const handleSave = () => {
     const theme = onSave(settings);
@@ -97,12 +98,21 @@ export const CustomThemePanel: React.FC<CustomThemePanelProps> = ({
   const getVisibleSettings = (): Record<string, string> => {
     const colorSettings: Record<string, string> = {};
     const keys = Object.keys(settings).filter(
-      (k) => k.startsWith('SETTING_') && k.includes('COLOR')
+      (k) => (k.startsWith('SETTING_') && k.includes('COLOR')) || k.includes('BACKLIGHT')
     );
     for (const key of keys) {
-      const isNightKey = key.startsWith('SETTING_NIGHT_');
-      if (isNight ? isNightKey : !isNightKey) {
-        colorSettings[key] = String(settings[key as keyof Settings]);
+      if (isQuiet) {
+        if (key.startsWith('SETTING_QUIET_')) {
+          colorSettings[key] = String(settings[key as keyof Settings]);
+        }
+      } else if (isNight) {
+        if (key.startsWith('SETTING_NIGHT_')) {
+          colorSettings[key] = String(settings[key as keyof Settings]);
+        }
+      } else {
+        if (!key.startsWith('SETTING_NIGHT_') && !key.startsWith('SETTING_QUIET_')) {
+          colorSettings[key] = String(settings[key as keyof Settings]);
+        }
       }
     }
     return colorSettings;
@@ -113,7 +123,11 @@ export const CustomThemePanel: React.FC<CustomThemePanelProps> = ({
       <div className={`halite-custom-panel-preview ${isRound ? 'round' : 'rect'}`}>
         <WatchPreview
           overrideSettings={isSaved
-            ? (isNight ? remapToNightKeys(savedTheme!.settings) : savedTheme!.settings)
+            ? (isQuiet
+                ? remapToQuietKeys(savedTheme!.settings)
+                : isNight
+                  ? remapToNightKeys(savedTheme!.settings)
+                  : savedTheme!.settings)
             : undefined
           }
           {...watchPreviewProps}

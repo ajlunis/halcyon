@@ -52,6 +52,8 @@ module.exports = {
     "SET": "TRAMONTO",
     "RAIN": "PIOGGIA",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "BAT TEL"
   }
 };

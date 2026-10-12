@@ -170,8 +170,9 @@ void draw_ring_layer(Layer *layer, GContext *ctx) {
   graphics_fill_circle(ctx, sunPos, SUN_DIAMETER);
   graphics_draw_circle(ctx, sunPos, SUN_DIAMETER);
 
-  //   graphics_context_set_fill_color(ctx, GColorRed);
-  // graphics_fill_rect(ctx, sunBoundingRect, 0, GCornerNone);
+  if (globalSettings.showBtDisconnectIcon && !bluetooth_is_connected()) {
+    draw_bt_disconnect_indicator(ctx, bounds);
+  }
 }
 
 #endif

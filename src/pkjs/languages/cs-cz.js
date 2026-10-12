@@ -1,4 +1,4 @@
-// Localized strings for PebbleKit JS: cz
+// Localized strings for PebbleKit JS: cs
 
 module.exports = {
   "weather": {
@@ -52,6 +52,8 @@ module.exports = {
     "SET": "ZÁPAD",
     "RAIN": "DÉŠŤ",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "TEL BAT"
   }
 };

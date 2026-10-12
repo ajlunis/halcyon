@@ -52,6 +52,8 @@ module.exports = {
     "SET": "일몰",
     "RAIN": "비",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "폰",
+    "PHONE_BATTERY": "폰 배터리"
   }
 };

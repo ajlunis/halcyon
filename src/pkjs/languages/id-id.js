@@ -52,6 +52,8 @@ module.exports = {
     "SET": "TERBENAM",
     "RAIN": "HUJAN",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "HP",
+    "PHONE_BATTERY": "BAT HP"
   }
 };

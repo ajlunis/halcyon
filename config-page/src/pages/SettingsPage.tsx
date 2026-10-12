@@ -11,6 +11,7 @@ import {
   WidgetSelector,
   DonationLink,
   AltTimezoneSection,
+  BacklightColorPicker,
 } from '../components';
 import { useSavedThemes } from '../hooks/useSavedThemes';
 import lightThemes from '../data/light-themes.json';
@@ -56,6 +57,14 @@ export const SettingsPage: React.FC = () => {
     [capabilities.BW],
   );
 
+  const activeQuietThemes = React.useMemo(
+    () =>
+      capabilities.BW
+        ? prepareThemes(darkThemesBw, neutralThemesBw, lightThemesBw, 'quiet')
+        : prepareThemes(darkThemes, neutralThemes, lightThemes, 'quiet'),
+    [capabilities.BW],
+  );
+
   const savedThemes = useSavedThemes();
 
   const getDaySavedTheme = () =>
@@ -63,6 +72,9 @@ export const SettingsPage: React.FC = () => {
 
   const getNightSavedTheme = () =>
     savedThemes.savedThemes.find((t) => t.id === settings.SETTING_NIGHT_THEME);
+
+  const getQuietSavedTheme = () =>
+    savedThemes.savedThemes.find((t) => t.id === settings.SETTING_QUIET_THEME);
 
   return (
     <Page title="Halcyon Settings">
@@ -124,6 +136,12 @@ export const SettingsPage: React.FC = () => {
               bwAllowGrey={false}
             />
             <ColorPicker label="Sun fill color" messageKey="SETTING_SUN_FILL_COLOR" />
+            <BacklightColorPicker
+              label="Backlight color"
+              description="Backlight color for Time 2 and Round 2"
+              useSystemKey="SETTING_BACKLIGHT_USE_SYSTEM"
+              colorKey="SETTING_BACKLIGHT_COLOR"
+            />
           </>
         )}
       </Section>
@@ -208,6 +226,104 @@ export const SettingsPage: React.FC = () => {
                   bwAllowGrey={false}
                 />
                 <ColorPicker label="Sun fill color" messageKey="SETTING_NIGHT_SUN_FILL_COLOR" />
+                <BacklightColorPicker
+                  label="Backlight color"
+                  description="Backlight color for Time 2 and Round 2"
+                  useSystemKey="SETTING_NIGHT_BACKLIGHT_USE_SYSTEM"
+                  colorKey="SETTING_NIGHT_BACKLIGHT_COLOR"
+                />
+              </>
+            )}
+          </>
+        )}
+      </Section>
+
+      <Section title="Quiet Time Theme">
+        <Toggle
+          label="Enable Quiet Time theme"
+          description="If enabled, this theme will be shown when Quiet Time is active on the watch."
+          messageKey="SETTING_USE_QUIET_THEME"
+        />
+        {settings.SETTING_USE_QUIET_THEME === 1 && (
+          <>
+            <ThemePicker
+              messageKey="SETTING_QUIET_THEME"
+              label="Quiet Time theme preset"
+              themes={activeQuietThemes}
+              watchPreviewProps={{ isQuiet: true }}
+              savedThemes={savedThemes.savedThemes}
+            />
+            <CustomThemePanel
+              themeId={settings.SETTING_QUIET_THEME}
+              savedTheme={getQuietSavedTheme()}
+              watchPreviewProps={{ isQuiet: true }}
+              onSave={(s) => savedThemes.saveTheme(s, 'quiet')}
+              onDelete={savedThemes.deleteTheme}
+              onImport={savedThemes.importTheme}
+              onExport={savedThemes.exportTheme}
+              onSelectTheme={(id) => updateSetting('SETTING_QUIET_THEME', id)}
+            />
+            {settings.SETTING_QUIET_THEME === 'custom' && (
+              <>
+                <ColorPicker
+                  label="Time color"
+                  messageKey="SETTING_QUIET_TIME_COLOR"
+                  bwAllowGrey={false}
+                />
+                <ColorPicker
+                  label="Widget text color (primary)"
+                  messageKey="SETTING_QUIET_SUBTEXT_PRIMARY_COLOR"
+                  bwAllowGrey={false}
+                />
+                <ColorPicker
+                  label="Widget text color (secondary)"
+                  messageKey="SETTING_QUIET_SUBTEXT_SECONDARY_COLOR"
+                  bwAllowGrey={false}
+                />
+                <ColorPicker label="Background color" messageKey="SETTING_QUIET_BG_COLOR" />
+                <ColorPicker
+                  label="Ring day section color"
+                  messageKey="SETTING_QUIET_RING_DAY_COLOR"
+                />
+                <ColorPicker
+                  label="Ring sunrise section color"
+                  messageKey="SETTING_QUIET_RING_SUNRISE_COLOR"
+                />
+                <ColorPicker
+                  label="Ring sunset section color"
+                  messageKey="SETTING_QUIET_RING_SUNSET_COLOR"
+                />
+                <ColorPicker
+                  label="Ring night section color"
+                  messageKey="SETTING_QUIET_RING_NIGHT_COLOR"
+                />
+                <ColorPicker
+                  label="Dial marker color (primary)"
+                  messageKey="SETTING_QUIET_PIP_COLOR_PRIMARY"
+                  bwAllowGrey={false}
+                />
+                <ColorPicker
+                  label="Dial marker color (secondary)"
+                  messageKey="SETTING_QUIET_PIP_COLOR_SECONDARY"
+                  bwAllowGrey={false}
+                />
+                <ColorPicker
+                  label="Ring outline color"
+                  messageKey="SETTING_QUIET_RING_STROKE_COLOR"
+                  bwAllowGrey={false}
+                />
+                <ColorPicker
+                  label="Sun outline color"
+                  messageKey="SETTING_QUIET_SUN_STROKE_COLOR"
+                  bwAllowGrey={false}
+                />
+                <ColorPicker label="Sun fill color" messageKey="SETTING_QUIET_SUN_FILL_COLOR" />
+                <BacklightColorPicker
+                  label="Backlight color"
+                  description="Backlight color for Time 2 and Round 2"
+                  useSystemKey="SETTING_QUIET_BACKLIGHT_USE_SYSTEM"
+                  colorKey="SETTING_QUIET_BACKLIGHT_COLOR"
+                />
               </>
             )}
           </>
@@ -310,6 +426,11 @@ export const SettingsPage: React.FC = () => {
           label="Show leading zero"
           description="Display time as 09:30 instead of 9:30"
           messageKey="SETTING_SHOW_LEADING_ZERO"
+        />
+        <Toggle
+          label="Bluetooth disconnect icon"
+          description="Show an indicator at the top when disconnected from your phone"
+          messageKey="SETTING_SHOW_BT_DISCONNECT_ICON"
         />
         <Select
           label="Dial Markings"

@@ -1,11 +1,8 @@
-name: Deploy Config Page
+name: Build Watchface and Deploy Config Page
 
 on:
   push:
     branches: ["master"]
-    paths:
-      - 'config-page/**'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -18,7 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-watchapp:
+    name: Build Pebble Watchapp (.pbw)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,7 +25,46 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
+          cache: npm
+
+      - name: Verify i18n
+        run: npm run check:i18n
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Pebble Tool & SDK
+        run: |
+          uv tool install pebble-tool --python 3.13
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          $HOME/.local/bin/pebble sdk install latest
+          chmod +x $HOME/.local/share/pebble-sdk/SDKs/current/node_modules/.bin/* || true
+
+      - name: Build PBW
+        run: |
+          pebble build
+
+      - name: Upload PBW Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Halcyon-pbw
+          path: build/Halcyon.pbw
+
+  deploy-config-page:
+    name: Build & Deploy Config Page
+    runs-on: ubuntu-latest
+    needs: build-watchapp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
           cache: npm
           cache-dependency-path: config-page/package-lock.json
 
@@ -38,22 +75,21 @@ jobs:
         working-directory: ./config-page
         run: npm ci
 
-      - name: Build with base path
+      - name: Build Config Page
         working-directory: ./config-page
         run: npx vite build
 
-      - name: Upload artifact
+      - name: Download PBW Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Halcyon-pbw
+          path: config-page/dist
+
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./config-page/dist
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

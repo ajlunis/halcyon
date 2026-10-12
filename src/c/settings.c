@@ -18,6 +18,40 @@ static void populateStoredSettingsExtra(StoredSettingsExtra *storedSettingsExtra
   storedSettingsExtra->localUtcOffset = globalSettings.localUtcOffset;
   storedSettingsExtra->usePrimaryFontForAllWidgets =
       globalSettings.usePrimaryFontForAllWidgets;
+  storedSettingsExtra->useSystemBacklight = globalSettings.useSystemBacklight;
+  storedSettingsExtra->backlightColor = globalSettings.backlightColor;
+  storedSettingsExtra->nightUseSystemBacklight =
+      globalSettings.nightUseSystemBacklight;
+  storedSettingsExtra->nightBacklightColor = globalSettings.nightBacklightColor;
+  storedSettingsExtra->showBtDisconnectIcon = globalSettings.showBtDisconnectIcon;
+  storedSettingsExtra->useQuietTheme = globalSettings.useQuietTheme;
+  storedSettingsExtra->quietTimeColor = globalSettings.quietTimeColor;
+  storedSettingsExtra->quietSubtextPrimaryColor =
+      globalSettings.quietSubtextPrimaryColor;
+  storedSettingsExtra->quietSubtextSecondaryColor =
+      globalSettings.quietSubtextSecondaryColor;
+  storedSettingsExtra->quietBgColor = globalSettings.quietBgColor;
+  storedSettingsExtra->quietPipColorPrimary =
+      globalSettings.quietPipColorPrimary;
+  storedSettingsExtra->quietPipColorSecondary =
+      globalSettings.quietPipColorSecondary;
+  storedSettingsExtra->quietRingStrokeColor =
+      globalSettings.quietRingStrokeColor;
+  storedSettingsExtra->quietRingNightColor =
+      globalSettings.quietRingNightColor;
+  storedSettingsExtra->quietRingDayColor = globalSettings.quietRingDayColor;
+  storedSettingsExtra->quietRingSunriseColor =
+      globalSettings.quietRingSunriseColor;
+  storedSettingsExtra->quietRingSunsetColor =
+      globalSettings.quietRingSunsetColor;
+  storedSettingsExtra->quietSunStrokeColor =
+      globalSettings.quietSunStrokeColor;
+  storedSettingsExtra->quietSunFillColor = globalSettings.quietSunFillColor;
+  storedSettingsExtra->quietUseSystemBacklight =
+      globalSettings.quietUseSystemBacklight;
+  storedSettingsExtra->quietBacklightColor =
+      globalSettings.quietBacklightColor;
+  storedSettingsExtra->lastPhoneBattery = globalSettings.lastPhoneBattery;
 }
 
 void Settings_init() { Settings_loadFromStorage(); }
@@ -91,6 +125,30 @@ void Settings_loadFromStorage() {
   globalSettings.altCity2UtcOffset = 0;
   globalSettings.localUtcOffset = 0;
   globalSettings.usePrimaryFontForAllWidgets = false;
+  globalSettings.useSystemBacklight = DEFAULT_BACKLIGHT_USE_SYSTEM;
+  globalSettings.backlightColor = DEFAULT_BACKLIGHT_COLOR;
+  globalSettings.nightUseSystemBacklight = DEFAULT_NIGHT_BACKLIGHT_USE_SYSTEM;
+  globalSettings.nightBacklightColor = DEFAULT_NIGHT_BACKLIGHT_COLOR;
+  globalSettings.showBtDisconnectIcon = DEFAULT_SHOW_BT_DISCONNECT_ICON;
+  globalSettings.useQuietTheme = DEFAULT_USE_QUIET_THEME;
+  globalSettings.quietTimeColor = DEFAULT_QUIET_TIME_COLOR;
+  globalSettings.quietSubtextPrimaryColor =
+      DEFAULT_QUIET_SUBTEXT_PRIMARY_COLOR;
+  globalSettings.quietSubtextSecondaryColor =
+      DEFAULT_QUIET_SUBTEXT_SECONDARY_COLOR;
+  globalSettings.quietBgColor = DEFAULT_QUIET_BG_COLOR;
+  globalSettings.quietPipColorPrimary = DEFAULT_QUIET_PIP_COLOR_PRIMARY;
+  globalSettings.quietPipColorSecondary = DEFAULT_QUIET_PIP_COLOR_SECONDARY;
+  globalSettings.quietRingStrokeColor = DEFAULT_QUIET_RING_STROKE_COLOR;
+  globalSettings.quietRingNightColor = DEFAULT_QUIET_RING_NIGHT_COLOR;
+  globalSettings.quietRingDayColor = DEFAULT_QUIET_RING_DAY_COLOR;
+  globalSettings.quietRingSunriseColor = DEFAULT_QUIET_RING_SUNRISE_COLOR;
+  globalSettings.quietRingSunsetColor = DEFAULT_QUIET_RING_SUNSET_COLOR;
+  globalSettings.quietSunStrokeColor = DEFAULT_QUIET_SUN_STROKE_COLOR;
+  globalSettings.quietSunFillColor = DEFAULT_QUIET_SUN_FILL_COLOR;
+  globalSettings.quietUseSystemBacklight = DEFAULT_QUIET_BACKLIGHT_USE_SYSTEM;
+  globalSettings.quietBacklightColor = DEFAULT_QUIET_BACKLIGHT_COLOR;
+  globalSettings.lastPhoneBattery = -1;
 
   if (persist_exists(SETTINGS_PERSIST_KEY)) {
     const int stored_size = persist_get_size(SETTINGS_PERSIST_KEY);
@@ -127,8 +185,49 @@ void Settings_loadFromStorage() {
       globalSettings.localUtcOffset = storedSettingsExtra.localUtcOffset;
       globalSettings.usePrimaryFontForAllWidgets =
           storedSettingsExtra.usePrimaryFontForAllWidgets;
+      globalSettings.useSystemBacklight =
+          storedSettingsExtra.useSystemBacklight;
+      globalSettings.backlightColor = storedSettingsExtra.backlightColor;
+      globalSettings.nightUseSystemBacklight =
+          storedSettingsExtra.nightUseSystemBacklight;
+      globalSettings.nightBacklightColor =
+          storedSettingsExtra.nightBacklightColor;
+      globalSettings.showBtDisconnectIcon =
+          storedSettingsExtra.showBtDisconnectIcon;
+      globalSettings.useQuietTheme = storedSettingsExtra.useQuietTheme;
+      globalSettings.quietTimeColor = storedSettingsExtra.quietTimeColor;
+      globalSettings.quietSubtextPrimaryColor =
+          storedSettingsExtra.quietSubtextPrimaryColor;
+      globalSettings.quietSubtextSecondaryColor =
+          storedSettingsExtra.quietSubtextSecondaryColor;
+      globalSettings.quietBgColor = storedSettingsExtra.quietBgColor;
+      globalSettings.quietPipColorPrimary =
+          storedSettingsExtra.quietPipColorPrimary;
+      globalSettings.quietPipColorSecondary =
+          storedSettingsExtra.quietPipColorSecondary;
+      globalSettings.quietRingStrokeColor =
+          storedSettingsExtra.quietRingStrokeColor;
+      globalSettings.quietRingNightColor =
+          storedSettingsExtra.quietRingNightColor;
+      globalSettings.quietRingDayColor =
+          storedSettingsExtra.quietRingDayColor;
+      globalSettings.quietRingSunriseColor =
+          storedSettingsExtra.quietRingSunriseColor;
+      globalSettings.quietRingSunsetColor =
+          storedSettingsExtra.quietRingSunsetColor;
+      globalSettings.quietSunStrokeColor =
+          storedSettingsExtra.quietSunStrokeColor;
+      globalSettings.quietSunFillColor =
+          storedSettingsExtra.quietSunFillColor;
+      globalSettings.quietUseSystemBacklight =
+          storedSettingsExtra.quietUseSystemBacklight;
+      globalSettings.quietBacklightColor =
+          storedSettingsExtra.quietBacklightColor;
+      globalSettings.lastPhoneBattery = storedSettingsExtra.lastPhoneBattery;
     }
   }
+
+  widget_set_phone_battery_level(globalSettings.lastPhoneBattery);
 
   Settings_updateDynamicSettings();
 }
@@ -181,13 +280,32 @@ ColorTheme getCurrentColorTheme() {
   struct tm *timeInfo = getCurrentTime();
   int currentMinutes = timeInfo->tm_hour * 60 + timeInfo->tm_min;
 
+  bool useQuiet = globalSettings.useQuietTheme && quiet_time_is_active();
   bool useNight = globalSettings.useNightTheme && isNightTime(currentMinutes);
 
   APP_LOG(APP_LOG_LEVEL_DEBUG,
-          "getCurrentColorTheme: useNightTheme=%d, useNight=%d",
-          globalSettings.useNightTheme, useNight);
+          "getCurrentColorTheme: useQuietTheme=%d, useQuiet=%d, useNightTheme=%d, useNight=%d",
+          globalSettings.useQuietTheme, useQuiet, globalSettings.useNightTheme, useNight);
 
-  if (useNight) {
+  if (useQuiet) {
+    theme.timeColor = globalSettings.quietTimeColor;
+    theme.subtextPrimaryColor = globalSettings.quietSubtextPrimaryColor;
+    theme.subtextSecondaryColor = globalSettings.quietSubtextSecondaryColor;
+    theme.bgColor = globalSettings.quietBgColor;
+    theme.pipColorPrimary = globalSettings.quietPipColorPrimary;
+    theme.pipColorSecondary = globalSettings.quietPipColorSecondary;
+    theme.ringStrokeColor = globalSettings.quietRingStrokeColor;
+    theme.ringNightColor = globalSettings.quietRingNightColor;
+    theme.ringDayColor = globalSettings.quietRingDayColor;
+    theme.ringSunriseColor = globalSettings.quietRingSunriseColor;
+    theme.ringSunsetColor = globalSettings.quietRingSunsetColor;
+    theme.sunStrokeColor = globalSettings.quietSunStrokeColor;
+    theme.sunFillColor = globalSettings.quietSunFillColor;
+#if defined(PBL_RGB_BACKLIGHT)
+    theme.useSystemBacklight = globalSettings.quietUseSystemBacklight;
+    theme.backlightColor = globalSettings.quietBacklightColor;
+#endif
+  } else if (useNight) {
     theme.timeColor = globalSettings.nightTimeColor;
     theme.subtextPrimaryColor = globalSettings.nightSubtextPrimaryColor;
     theme.subtextSecondaryColor = globalSettings.nightSubtextSecondaryColor;
@@ -201,6 +319,10 @@ ColorTheme getCurrentColorTheme() {
     theme.ringSunsetColor = globalSettings.nightRingSunsetColor;
     theme.sunStrokeColor = globalSettings.nightSunStrokeColor;
     theme.sunFillColor = globalSettings.nightSunFillColor;
+#if defined(PBL_RGB_BACKLIGHT)
+    theme.useSystemBacklight = globalSettings.nightUseSystemBacklight;
+    theme.backlightColor = globalSettings.nightBacklightColor;
+#endif
   } else {
     theme.timeColor = globalSettings.timeColor;
     theme.subtextPrimaryColor = globalSettings.subtextPrimaryColor;
@@ -215,6 +337,10 @@ ColorTheme getCurrentColorTheme() {
     theme.ringSunsetColor = globalSettings.ringSunsetColor;
     theme.sunStrokeColor = globalSettings.sunStrokeColor;
     theme.sunFillColor = globalSettings.sunFillColor;
+#if defined(PBL_RGB_BACKLIGHT)
+    theme.useSystemBacklight = globalSettings.useSystemBacklight;
+    theme.backlightColor = globalSettings.backlightColor;
+#endif
   }
 
   return theme;

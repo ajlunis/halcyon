@@ -22,6 +22,8 @@ const SET_LABELS = ["SET", "COUCHER", "UNTERGANG", "PUESTA", "TRAMONTO", "ONDER"
 const RAIN_LABELS = ["RAIN", "PLUIE", "REGEN", "LLUVIA", "PIOGGIA", "REGEN", "YAĞMUR", "DÉŠŤ", "CHUVA", "ΒΡΟΧΗ", "REGN", "DESZCZ", "DÁŽĎ", "MƯA", "PLOAIE", "PLUJA", "REGN", "ДОЖДЬ", "VIHM", "EURIA", "SADE", "REGN", "LIETUS", "DEŽ", "ESŐ", "KIŠA", "BÁISTEACH", "LIETUS", "KIŠA", "雨", "HUJAN", "ДОЩ", "GLAW", "CHUVIA", "雨", "비", "גשם", "RAIN"];
 const UV_LABELS = ["UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV", "UV"];
 const BPM_LABELS = ["BPM", "BPM", "BPM", "PPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "УД/МИН", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "BPM", "次/分", "BPM", "УД/ХВ", "BPM", "BPM", "拍/分", "BPM", "פעימות", "BPM"];
+const PHONE_LABELS = ["PHONE", "TÉL", "TEL", "TEL", "TEL", "TEL", "TEL", "TEL", "TEL", "ΤΗΛ", "TEL", "TEL", "TEL", "ĐT", "TEL", "TEL", "TLF", "ТЕЛ", "TEL", "TEL", "PUH", "TLF", "TEL", "TEL", "TEL", "TEL", "FÓN", "TĀLR", "TEL", "手机", "HP", "ТЕЛ", "FFÔN", "TEL", "スマホ", "폰", "טלפון", "PHONE"];
+const PHONE_BATTERY_LABELS = ["PHONE BATT", "BAT TÉL", "TEL AKKU", "BAT TEL", "BAT TEL", "TEL BAT", "TEL PİL", "TEL BAT", "BAT TEL", "ΜΠΑΤ ΤΗΛ", "TEL BATT", "BAT TEL", "TEL BAT", "PIN ĐT", "BAT TEL", "BAT TEL", "TLF BATT", "ЗАРЯД ТЕЛ", "TEL AKU", "BAT TEL", "PUH AKKU", "TLF BATT", "TEL BAT", "TEL BAT", "TEL AKKU", "TEL BAT", "CEALLRA FÓN", "TEL BAT", "TEL BAT", "手机电量", "BAT HP", "ЗАРЯД ТЕЛ", "BATRI FFÔN", "BAT TEL", "スマホ電池", "폰 배터리", "סוללת טלפון", "PHONE BATT"];
 
 const TRANSLATIONS: Record<string, string[]> = {
   STEPS: STEPS_LABELS,
@@ -35,6 +37,8 @@ const TRANSLATIONS: Record<string, string[]> = {
   RAIN: RAIN_LABELS,
   UV: UV_LABELS,
   BPM: BPM_LABELS,
+  PHONE: PHONE_LABELS,
+  PHONE_BATTERY: PHONE_BATTERY_LABELS,
 };
 // Sample weather condition (WMO code 0, "Clear") for previews. Mirrors
 // src/pkjs/languages.js WEATHER_CODES[0]. Only one condition is needed since
@@ -153,6 +157,7 @@ export const renderPreview = (
     '{dist_unit}': isImperial ? 'MI' : 'KM',
     '{hr}': '72',
     '{batt}': '85',
+    '{phone_batt}': '78',
     // Solar / weather (PKJS-side)
     '{sunrise}': '6:42',
     '{sunset}': '18:18',

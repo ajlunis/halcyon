@@ -52,6 +52,8 @@ module.exports = {
     "SET": "שקיעה",
     "RAIN": "גשם",
     "UV": "UV",
-    "BPM": "פעימות"
+    "BPM": "פעימות",
+    "PHONE": "טלפון",
+    "PHONE_BATTERY": "סוללת טלפון"
   }
 };

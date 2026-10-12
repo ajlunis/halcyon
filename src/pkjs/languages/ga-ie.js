@@ -52,6 +52,8 @@ module.exports = {
     "SET": "DUL SÍOS",
     "RAIN": "BÁISTEACH",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "FÓN",
+    "PHONE_BATTERY": "CEALLRA FÓN"
   }
 };

@@ -25,3 +25,5 @@
 
 void draw_center_layer(Layer *layer, GContext *ctx);
 void draw_ring_layer(Layer *layer, GContext *ctx);
+bool bluetooth_is_connected(void);
+void draw_bt_disconnect_indicator(GContext *ctx, GRect bounds);

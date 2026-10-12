@@ -52,6 +52,8 @@ module.exports = {
     "SET": "BATIŞ",
     "RAIN": "YAĞMUR",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "TEL PİL"
   }
 };

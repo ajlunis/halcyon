@@ -8,3 +8,4 @@ void inbox_dropped_callback(AppMessageResult reason, void *context);
 void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context);
 void outbox_sent_callback(DictionaryIterator *iterator, void *context);
 void messaging_request_update();
+void messaging_request_phone_battery();

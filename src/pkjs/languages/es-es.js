@@ -52,6 +52,8 @@ module.exports = {
     "SET": "PUESTA",
     "RAIN": "LLUVIA",
     "UV": "UV",
-    "BPM": "PPM"
+    "BPM": "PPM",
+    "PHONE": "TEL",
+    "PHONE_BATTERY": "BAT TEL"
   }
 };

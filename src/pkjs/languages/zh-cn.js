@@ -52,6 +52,8 @@ module.exports = {
     "SET": "日落",
     "RAIN": "雨",
     "UV": "UV",
-    "BPM": "次/分"
+    "BPM": "次/分",
+    "PHONE": "手机",
+    "PHONE_BATTERY": "手机电量"
   }
 };

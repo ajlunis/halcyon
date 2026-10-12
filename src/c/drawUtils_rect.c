@@ -5,8 +5,6 @@
 #include "solarUtils.h"
 #include "utils.h"
 
-static ColorTheme currentTheme;
-
 GPoint get_rect_position(float progress, GRect bounds) {
   if (progress < 0.25f) {
     float t = progress / 0.25f;
@@ -54,7 +52,7 @@ GRect snap_to_edges(GRect rect, GRect bounds, int thickness) {
 }
 
 void draw_center_layer(Layer *layer, GContext *ctx) {
-  currentTheme = getCurrentColorTheme();
+  ColorTheme currentTheme = getCurrentColorTheme();
   GRect bounds = layer_get_bounds(layer);
   graphics_context_set_fill_color(ctx, currentTheme.bgColor);
 
@@ -113,7 +111,7 @@ void draw_center_layer(Layer *layer, GContext *ctx) {
 }
 
 void draw_ring_layer(Layer *layer, GContext *ctx) {
-  currentTheme = getCurrentColorTheme();
+  ColorTheme currentTheme = getCurrentColorTheme();
   GRect bounds = layer_get_bounds(layer);
   int thickness = RING_THICKNESS;
   int strokeWidth = RING_STROKE_WIDTH;
@@ -212,5 +210,9 @@ void draw_ring_layer(Layer *layer, GContext *ctx) {
   graphics_context_set_stroke_color(ctx, currentTheme.sunStrokeColor);
   graphics_fill_circle(ctx, sunPos, SUN_DIAMETER);
   graphics_draw_circle(ctx, sunPos, SUN_DIAMETER);
+
+  if (globalSettings.showBtDisconnectIcon && !bluetooth_is_connected()) {
+    draw_bt_disconnect_indicator(ctx, bounds);
+  }
 }
 #endif

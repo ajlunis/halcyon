@@ -52,6 +52,8 @@ module.exports = {
     "SET": "AUR. LASKU",
     "RAIN": "SADE",
     "UV": "UV",
-    "BPM": "BPM"
+    "BPM": "BPM",
+    "PHONE": "PUH",
+    "PHONE_BATTERY": "PUH AKKU"
   }
 };
